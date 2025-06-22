@@ -8,7 +8,7 @@ bl_info = {
     "location": "3D Viewport > Sidebar > Tool Tab",
     "description": "Match object dimensions to texture dimensions with UDIM support and hybrid live rescale",
     "category": "Mesh",
-    "doc_url": "",
+    "doc_url": "",  
     "tracker_url": "",
     "support": "COMMUNITY",
 }

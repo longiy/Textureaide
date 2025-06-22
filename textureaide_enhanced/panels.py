@@ -348,4 +348,94 @@ class TEXTUREAIDE_PT_main_panel(Panel):
         else:
             button_text = "Apply Texture Scaling"
         
-        row.
+        row.operator("textureaide.texture_scale_match", text=button_text, icon='MESH_CUBE')
+        
+        # Pixel ratio setting
+        layout.prop(props, "pixel_to_mm_ratio")
+    
+    def draw_settings_section(self, layout, props):
+        """Draw settings and advanced options"""
+        layout.separator()
+        
+        # Settings header
+        row = layout.row()
+        row.prop(props, "show_advanced_settings", 
+                text="Advanced Settings", icon='TRIA_DOWN' if props.show_advanced_settings else 'TRIA_RIGHT')
+        
+        if props.show_advanced_settings:
+            box = layout.box()
+            
+            # Auto refresh
+            box.prop(props, "auto_refresh_lists")
+            
+            # Show missing files
+            box.prop(props, "show_missing_files")
+            
+            # Refresh button
+            box.operator("textureaide.refresh_lists", text="Refresh Lists", icon='FILE_REFRESH')
+            
+            # Batch operations
+            box.separator()
+            box.label(text="Batch Operations:")
+            box.operator("textureaide.batch_apply_settings", text="Apply to Selected", icon='DUPLICATE')
+    
+    def draw_info_section(self, layout, obj, selected_material, selected_node, props):
+        """Draw information and status"""
+        box = layout.box()
+        box.label(text="Information:", icon='INFO')
+        
+        # Object info
+        if obj:
+            dims = obj.dimensions
+            box.label(text=f"Object: {obj.name}")
+            box.label(text=f"Size: {dims.x:.3f} × {dims.y:.3f} × {dims.z:.3f}m")
+        
+        # Material info
+        if selected_material:
+            box.label(text=f"Material: {selected_material.name}")
+        
+        # Image info
+        if selected_node and selected_node.image:
+            image = selected_node.image
+            box.label(text=f"Image: {image.name}")
+            if image.source == 'TILED':
+                box.label(text="Type: UDIM Texture")
+                if props.udim_items:
+                    box.label(text=f"UDIM Count: {len(props.udim_items)}")
+            else:
+                box.label(text=f"Size: {image.size[0]}×{image.size[1]}px")
+        
+        # Last operation
+        if props.last_operation:
+            box.separator()
+            box.label(text="Last Operation:", icon='CHECKMARK')
+            box.label(text=props.last_operation)
+
+# Registration
+classes = [
+    TEXTUREAIDE_UL_material_list,
+    TEXTUREAIDE_UL_image_node_list,
+    TEXTUREAIDE_UL_udim_list,
+    TEXTUREAIDE_PT_main_panel,
+]
+
+def register():
+    """Register all panel classes"""
+    print("Registering TextureAide panels...")
+    
+    for cls in classes:
+        bpy.utils.register_class(cls)
+    
+    print("✓ TextureAide panels registered")
+
+def unregister():
+    """Unregister all panel classes"""
+    print("Unregistering TextureAide panels...")
+    
+    for cls in reversed(classes):
+        try:
+            bpy.utils.unregister_class(cls)
+        except Exception as e:
+            print(f"Warning: Could not unregister {cls}: {e}")
+    
+    print("✓ TextureAide panels unregistered")
